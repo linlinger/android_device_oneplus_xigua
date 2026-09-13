@@ -1,26 +1,2 @@
 # Device name
 ro.product.marketname=OnePlus Ace 2 Pro
-
-# Display (ColorOS-compatible VRR/ADFR/IRIS props)
-# Source: ColorOS my_product/build.prop (PJA110_11_A.01 固件静态分析)
-# Note: 这些 prop 在 ColorOS 由 oplus 私有服务 (displaypanelfeature +
-#       oplus-services.jar) 消费; 类原生无私有服务, 是否生效需实测。
-persist.oplus.display.vrr=1
-persist.oplus.display.vrr.adfr=2
-persist.oplus.display.vrr.adfr.single.pulse.support=0
-persist.oplus.display.pixelworks=1
-persist.oplus.display.pw_fully_sr=true
-debug.oplus.display.fast_rate_scale=1.6
-
-# Display config (odm/build.prop)
-persist.vendor.display.pxlw.iris_feature=0x41ff0780
-vendor.display.force_tonemapping=1
-
-# Display color modes (ro.oplus.display.*)
-ro.oplus.display.colormode.vivid=102
-ro.oplus.display.colormode.cinema=101
-ro.oplus.display.colormode.soft=101
-ro.oplus.display.colormode.colorful=100
-ro.oplus.display.rc.size=95,95,95,95
-ro.oplus.display.screenhole.positon=585,39:655,109
-ro.oplus.display.screenSizeInches.primary=6.74

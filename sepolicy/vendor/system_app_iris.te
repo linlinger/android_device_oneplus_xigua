@@ -1,0 +1,19 @@
+# AviumUI: IRIS bypass 设置 app 的 sepolicy
+#
+# OplusIrisBypass (device/oneplus/xigua/parts) 通过 /sys/kernel/iris/abyp_opt
+# 控制 Pixelworks IRIS7 芯片的 Analog Bypass (ABYP) 模式:
+#   echo 1 > /sys/kernel/iris/abyp_opt   # 强制旁路 (SOC 直连屏)
+#   echo 0 > /sys/kernel/iris/abyp_opt   # 恢复 IRIS 正常处理
+#
+# sysfs 节点标签: /sys/kernel/iris/ 由 hardware/oplus/sepolicy/qti/vendor/genfs_contexts
+# 打为 vendor_sysfs_iris (见该目录 file.te 的 type 定义与 init.te 的 vendor_init 允许)。
+#
+# 本文件用独立文件名 system_app_iris.te, 避免与 hardware/oplus/sepolicy/qti/vendor
+# 下的 system_app.te 同名冲突 (两个目录都通过 BOARD_VENDOR_SEPOLICY_DIRS 引入)。
+# AOSP sepolicy 会合并不同文件的规则, 此处的规则会并入 system_app 域。
+#
+# OplusIrisBypass 使用 android:sharedUserId="android.uid.system" +
+# platform 证书 + system_ext, 运行于 system_app 域。
+
+# IRIS Bypass: 允许 system_app 域读写 /sys/kernel/iris/abyp_opt
+rw_dir_file(system_app, vendor_sysfs_iris)

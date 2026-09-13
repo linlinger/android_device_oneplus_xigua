@@ -18,6 +18,10 @@ TARGET_SCREEN_HEIGHT := 2772
 TARGET_SCREEN_WIDTH := 1240
 
 # Display
+PRODUCT_PACKAGES += \
+    OplusLtpo \
+    OplusIrisBypass
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/display/displayconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630947194812807555.xml
 

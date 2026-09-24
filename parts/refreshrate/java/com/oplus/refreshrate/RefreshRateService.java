@@ -12,6 +12,9 @@
 
 package com.oplus.refreshrate;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -61,11 +64,32 @@ public class RefreshRateService extends Service {
         return null;
     }
 
+    /** 启动前台服务 (带通知, Android 12+ 必需) */
+    private void startForegroundServiceWithNotification() {
+        String channelId = "refreshrate";
+        NotificationChannel channel = new NotificationChannel(channelId,
+                "刷新率调度", NotificationManager.IMPORTANCE_LOW);
+        NotificationManager nm = getSystemService(NotificationManager.class);
+        if (nm != null) {
+            nm.createNotificationChannel(channel);
+        }
+        Notification notification = new Notification.Builder(this, channelId)
+                .setContentTitle("刷新率调度")
+                .setContentText("正在管理屏幕刷新率")
+                .setSmallIcon(android.R.drawable.ic_menu_view)
+                .setOngoing(true)
+                .build();
+        startForeground(1, notification);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate");
         mCore = new RefreshRateCore();
+
+        // 前台服务通知 (Android 12+ 必须, 否则服务被杀)
+        startForegroundServiceWithNotification();
 
         // 默认后端: SF (无 root 也可用)
         RefreshRateApplier.init(this, RefreshRateApplier.BACKEND_SF);

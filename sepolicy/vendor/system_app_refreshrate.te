@@ -4,7 +4,6 @@
 #   1. 刷新率调度 (投票决策 → 应用刷新率)
 #   2. 隐藏 secondary display: 通过 vendor.qti.hardware.display.config
 #      IDisplayConfig AIDL 调 setDisplayStatus(BUILTIN2, OFFLINE)
-#      → 需要 system_app 域 bind vendor_hal_displayconfig_service
 #   3. 环境检测: 读 /sys/kernel/iris (只读, 不修改 IRIS 状态)
 #   4. 可选后端 (BACKEND_SYSFS/BACKEND_OPLUS): 写
 #      /sys/kernel/oplus_display/{dsi_cmd,adfr_config}
@@ -17,10 +16,16 @@
 # AOSP sepolicy 合并不同文件规则, 此处规则并入 system_app 域。
 
 # 1. 绑定高通 display config HAL (IDisplayConfig AIDL, 隐藏 secondary)
-#    类型名: vendor_hal_displayconfig_service (来自 device/qcom/sepolicy)
-binder_call(system_app, vendor_hal_displayconfig_service)
-binder_call(vendor_hal_displayconfig_service, system_app)
-allow system_app vendor_hal_displayconfig_service:fd use;
+#    方法: ServiceManager.getService() (find) + binder transact
+#    权限已由 system_app.te 覆盖 (AOSP system_app 基础域):
+#      - allow system_app servicemanager:service_manager list;
+#      - allow system_app { service_manager_type ... }:service_manager find;
+#        (含 vendor_hal_displayconfig_service, 与 surfaceflinger.te:33 同理)
+#      - binder_use(system_app)
+#    注意: 不要对 service_manager_type 用 binder_call (含 transfer,
+#    违反 domain.te 的 neverallow — 编译错误已证实)。
+#    参考: device/qcom/sepolicy/generic/private/surfaceflinger.te:33
+#      allow surfaceflinger vendor_hal_displayconfig_service:service_manager find;
 
 # 2. 读取 IRIS sysfs (环境检测, 只读)
 #    标签: /sys/kernel/iris/ → vendor_sysfs_iris (hardware/oplus/sepolicy genfs)
@@ -32,7 +37,3 @@ r_dir_file(system_app, vendor_sysfs_iris)
 #    注意: system_app.te 已有 rw_dir_file(system_app, vendor_sysfs_graphics),
 #    无需重复 (保留注释说明)
 # rw_dir_file(system_app, vendor_sysfs_graphics)
-
-# 4. 读 DRM modes (环境检测, 失败不影响功能)
-#    注: sysfs_drm 类型在本 ROM 不存在, 不添加避免编译失败;
-#    DRM modes 读取失败时 EnvironmentChecker 走 fallback 档位。

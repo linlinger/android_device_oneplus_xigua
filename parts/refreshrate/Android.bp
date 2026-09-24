@@ -1,0 +1,26 @@
+//
+// Copyright (C) 2026 AviumUI Project
+//
+// OplusRefreshRate — 刷新率调度服务 (设备专属, PJA110)
+// 净室实现 ColorOS 调度: 投票决策 + 场景感知 + 隐藏 secondary
+// 兼容 OPPO 原厂配置文件 (refresh_rate_config.xml / oplus_vrr_config.json)
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+android_app {
+    name: "OplusRefreshRate",
+
+    srcs: ["java/**/*.java"],
+    resource_dirs: ["res"],
+    manifest: "AndroidManifest.xml",
+
+    certificate: "platform",
+    platform_apis: true,
+    system_ext_specific: true,
+    privileged: true,
+
+    optimize: {
+        enabled: false,
+    },
+}

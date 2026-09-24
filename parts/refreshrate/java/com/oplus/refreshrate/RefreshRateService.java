@@ -128,8 +128,10 @@ public class RefreshRateService extends Service {
                     .postDelayed(SecondaryDisplayHider::hideSecondary, 5000);
         }
 
-        registerReceiver(mCommandReceiver, new IntentFilter(ACTION_SET_MODE));
-        registerReceiver(mCommandReceiver, new IntentFilter(ACTION_SET_BACKEND));
+        registerReceiver(mCommandReceiver, new IntentFilter(ACTION_SET_MODE),
+                Context.RECEIVER_NOT_EXPORTED);
+        registerReceiver(mCommandReceiver, new IntentFilter(ACTION_SET_BACKEND),
+                Context.RECEIVER_NOT_EXPORTED);
 
         // 恢复上次模式
         mMode = getSharedPreferences("rr", MODE_PRIVATE).getInt("mode", 0);

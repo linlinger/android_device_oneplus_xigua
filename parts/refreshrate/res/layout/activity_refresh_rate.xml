@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 Oplus Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp" />
+
+    <RadioGroup
+        android:id="@+id/rr_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rr_auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rr_auto"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rr_120"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rr_120" />
+
+        <RadioButton
+            android:id="@+id/rr_90"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rr_90" />
+
+        <RadioButton
+            android:id="@+id/rr_60"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rr_60" />
+    </RadioGroup>
+
+</LinearLayout>

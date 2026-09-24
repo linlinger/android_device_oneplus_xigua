@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 Oplus Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">刷新率调度</string>
+    <string name="settings_title">刷新率模式</string>
+    <string name="rr_auto">智能模式 (自动调度)</string>
+    <string name="rr_120">锁定 120Hz</string>
+    <string name="rr_90">锁定 90Hz</string>
+    <string name="rr_60">锁定 60Hz</string>
+    <string name="rr_desc">选择刷新率模式:\n智能模式自动调度 (参考 ColorOS 策略)\n锁定模式固定刷新率, 避免切换风暴</string>
+</resources>

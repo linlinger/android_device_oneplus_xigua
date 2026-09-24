@@ -72,7 +72,8 @@ public class SceneMonitor {
         // 动画
         filter.addAction("com.oplus.refreshrate.ANIM_START");
         filter.addAction("com.oplus.refreshrate.ANIM_END");
-        mContext.registerReceiver(mReceiver, filter);
+        mContext.registerReceiver(mReceiver, filter,
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {

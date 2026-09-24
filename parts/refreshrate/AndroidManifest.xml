@@ -30,8 +30,7 @@
         <service
             android:name=".RefreshRateService"
             android:exported="true"
-            android:foregroundServiceType="specialUse"
-            android:permission="android.permission.BIND_JOB_SERVICE">
+            android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="refresh_rate_scheduler" />

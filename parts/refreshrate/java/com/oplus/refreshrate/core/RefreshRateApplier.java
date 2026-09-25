@@ -179,6 +179,16 @@ public class RefreshRateApplier {
                 Log.e(TAG, "resetUserPreferredDisplayMode failed: "
                         + e.getMessage());
             }
+
+            // 3. 重置 peak_refresh_rate (恢复系统默认, 防止残留锁定值导致风暴)
+            try {
+                android.provider.Settings.System.putFloat(
+                        sContext.getContentResolver(),
+                        "peak_refresh_rate", 120.0f);
+                Log.i(TAG, "peak_refresh_rate reset to 120.0 (default)");
+            } catch (Exception e) {
+                Log.e(TAG, "reset peak_refresh_rate failed: " + e.getMessage());
+            }
         } catch (Exception e) {
             Log.e(TAG, "resetToAuto failed", e);
         }

@@ -12,15 +12,13 @@
 
 package com.oplus.refreshrate;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.os.Process;
 import android.util.Log;
 
 import com.oplus.refreshrate.core.EnvironmentChecker;
@@ -64,32 +62,15 @@ public class RefreshRateService extends Service {
         return null;
     }
 
-    /** 启动前台服务 (带通知, Android 12+ 必需) */
-    private void startForegroundServiceWithNotification() {
-        String channelId = "refreshrate";
-        NotificationChannel channel = new NotificationChannel(channelId,
-                "刷新率调度", NotificationManager.IMPORTANCE_LOW);
-        NotificationManager nm = getSystemService(NotificationManager.class);
-        if (nm != null) {
-            nm.createNotificationChannel(channel);
-        }
-        Notification notification = new Notification.Builder(this, channelId)
-                .setContentTitle("刷新率调度")
-                .setContentText("正在管理屏幕刷新率")
-                .setSmallIcon(android.R.drawable.ic_menu_view)
-                .setOngoing(true)
-                .build();
-        startForeground(1, notification);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate");
         mCore = new RefreshRateCore();
 
-        // 前台服务通知 (Android 12+ 必须, 否则服务被杀)
-        startForegroundServiceWithNotification();
+        // 静默后台服务: 提高线程优先级 (模拟原厂 OPlusVRRThread 优先级 -14)
+        // 不显示通知, 不前台化, 保持后台运行 (debug 验证版)
+        Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
         // 默认后端: SF (无 root 也可用)
         RefreshRateApplier.init(this, RefreshRateApplier.BACKEND_SF);

@@ -6,9 +6,21 @@
 <resources>
     <string name="app_name">刷新率调度</string>
     <string name="settings_title">刷新率模式</string>
-    <string name="rr_auto">智能模式 (自动调度)</string>
-    <string name="rr_120">锁定 120Hz</string>
-    <string name="rr_90">锁定 90Hz</string>
-    <string name="rr_60">锁定 60Hz</string>
-    <string name="rr_desc">选择刷新率模式:\n智能模式自动调度 (参考 ColorOS 策略)\n锁定模式固定刷新率, 避免切换风暴</string>
+
+    <!-- 刷新率设置 -->
+    <string name="refresh_rate_title">刷新率模式</string>
+    <string name="refresh_rate_summary">选择刷新率调度策略</string>
+
+    <string-array name="refresh_rate_entries">
+        <item>智能模式 (自动调度)</item>
+        <item>锁定 60Hz</item>
+        <item>锁定 90Hz</item>
+        <item>锁定 120Hz</item>
+    </string-array>
+    <string-array name="refresh_rate_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

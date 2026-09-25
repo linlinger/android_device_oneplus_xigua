@@ -69,24 +69,81 @@ public class RefreshRateApplier {
         }
     }
 
-    /** 后端 1: SurfaceFlinger setDesiredActiveMode (AOSP 16) */
+    /** 后端 1: DisplayManager 锁定 + SF 模式切换 (AOSP 16, 无需 root) */
     private static void applySurfaceFlinger(float rate) {
         try {
-            IBinder sf = ServiceManager.getService("SurfaceFlinger");
-            if (sf == null) {
-                Log.w(TAG, "SurfaceFlinger service not found");
-                return;
+            // 1. 通过 DisplayManager 设置用户偏好模式 (真正的锁定)
+            //    setRefreshRateSwitchingType(NONE) = 禁止自动切换
+            android.hardware.display.DisplayManager dm =
+                    (android.hardware.display.DisplayManager)
+                    sContext.getSystemService(Context.DISPLAY_SERVICE);
+            if (dm != null) {
+                try {
+                    dm.setRefreshRateSwitchingType(
+                            android.hardware.display.DisplayManager
+                                    .SWITCHING_TYPE_NONE);
+                    Log.i(TAG, "switching type locked to NONE");
+                } catch (Exception e) {
+                    Log.e(TAG, "setRefreshRateSwitchingType failed: "
+                            + e.getMessage());
+                }
             }
-            // AOSP 16: ISurfaceComposer.setDesiredActiveMode(int modeId)
-            // 需要先查 modeId (通过 dumpsys 或 DisplayManager)
-            // 这里用反射调 Transaction.setDesiredActiveMode 或 SF 接口
-            // TODO: 实现 modeId 查询 (120/90/60 → modeId)
+
+            // 2. 同步 peak_refresh_rate (系统"流畅画面"会压刷新率, 必须同步)
+            try {
+                android.provider.Settings.System.putFloat(
+                        sContext.getContentResolver(),
+                        "peak_refresh_rate", rate);
+                Log.i(TAG, "peak_refresh_rate set to " + rate);
+            } catch (Exception e) {
+                Log.e(TAG, "set peak_refresh_rate failed: " + e.getMessage());
+            }
+
+            // 3. 设置目标模式 (通过 DisplayManagerGlobal.setUserPreferredDisplayMode 反射)
             int modeId = getModeIdForRate(rate);
-            Log.d(TAG, "SF setDesiredActiveMode modeId=" + modeId);
-            // android.os.Parcel 方式调用 (需要 Binder)
-            // 更可靠: 通过 DisplayManager.setRefreshRateSwitchingType
+            boolean ok = setUserPreferredModeId(modeId);
+            Log.i(TAG, "set userPreferredDisplayMode=" + modeId + " → " + ok);
         } catch (Exception e) {
             Log.e(TAG, "SF apply failed", e);
+        }
+    }
+
+    /** 反射调 DisplayManagerGlobal.setUserPreferredDisplayMode (隐藏 API) */
+    private static boolean setUserPreferredModeId(int modeId) {
+        try {
+            Class<?> dmGlobalCls = Class.forName(
+                    "android.hardware.display.DisplayManagerGlobal");
+            Object dmGlobal = dmGlobalCls.getMethod("getInstance")
+                    .invoke(null);
+
+            // 从 DisplayManager 拿默认 display 的 supportedModes (服务 Context 无 display)
+            android.hardware.display.DisplayManager dm =
+                    (android.hardware.display.DisplayManager)
+                    sContext.getSystemService(Context.DISPLAY_SERVICE);
+            android.view.Display display = dm != null
+                    ? dm.getDisplay(android.view.Display.DEFAULT_DISPLAY) : null;
+            android.view.Display.Mode target = null;
+            if (display != null) {
+                for (android.view.Display.Mode m : display.getSupportedModes()) {
+                    if (m.getModeId() == modeId) {
+                        target = m;
+                        break;
+                    }
+                }
+            }
+            if (target == null) {
+                Log.w(TAG, "mode " + modeId + " not found in supportedModes");
+                return false;
+            }
+
+            dmGlobalCls.getMethod("setUserPreferredDisplayMode",
+                            int.class, android.view.Display.Mode.class)
+                    .invoke(dmGlobal, android.view.Display.DEFAULT_DISPLAY,
+                            target);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "setUserPreferredDisplayMode failed: " + e.getMessage());
+            return false;
         }
     }
 
@@ -112,14 +169,14 @@ public class RefreshRateApplier {
         }
     }
 
-    /** 刷新率 → modeId (xigua 面板: 120=0, 60=1, 90=2 来自 dumpsys) */
+    /** 刷新率 → modeId (xigua primary display: 120=1, 60=2, 90=3, 实测 dumpsys) */
     private static int getModeIdForRate(float rate) {
         if (rate >= 120) {
-            return 0;
+            return 1;  // 120Hz mode id=1
         } else if (rate >= 90) {
-            return 2;
+            return 3;  // 90Hz mode id=3
         } else {
-            return 1;
+            return 2;  // 60Hz mode id=2
         }
     }
 

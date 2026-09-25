@@ -30,7 +30,6 @@ import com.oplus.refreshrate.core.RefreshRateApplier;
 import com.oplus.refreshrate.core.RefreshRateConfigParser;
 import com.oplus.refreshrate.core.RefreshRateCore;
 import com.oplus.refreshrate.core.SceneMonitor;
-import com.oplus.refreshrate.core.SecondaryDisplayHider;
 import com.oplus.refreshrate.core.VrrConfigParser;
 
 import java.io.File;
@@ -118,11 +117,6 @@ public class RefreshRateService extends Service {
 
         // 隐藏 secondary display (与 ColorOS 一致, 单 display 语义)
         // 仅在支持的环境中执行, 延迟等待 HWC/display 服务就绪
-        if (caps.supported && caps.hasDisplayConfig) {
-            new android.os.Handler(android.os.Looper.getMainLooper())
-                    .postDelayed(SecondaryDisplayHider::hideSecondary, 5000);
-        }
-
         registerReceiver(mCommandReceiver, new IntentFilter(ACTION_SET_MODE),
                 Context.RECEIVER_NOT_EXPORTED);
         registerReceiver(mCommandReceiver, new IntentFilter(ACTION_SET_BACKEND),

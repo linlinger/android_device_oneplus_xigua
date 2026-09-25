@@ -1,0 +1,37 @@
+# OplusRefreshRate 刷新率调度服务的 sepolicy
+#
+# OplusRefreshRate (device/oneplus/xigua/parts/refreshrate) 的功能与权限需求:
+#   1. 刷新率调度 (投票决策 → 应用刷新率)
+#   2. 隐藏 secondary display: 通过 vendor.qti.hardware.display.config
+#      IDisplayConfig AIDL 调 setDisplayStatus(BUILTIN2, OFFLINE)
+#   3. 环境检测: 读 /sys/kernel/iris (只读, 不修改 IRIS 状态)
+#   4. 可选后端 (BACKEND_SYSFS/BACKEND_OPLUS): 写
+#      /sys/kernel/oplus_display/{dsi_cmd,adfr_config}
+#
+# 与 IRIS 芯片的关系: 只读检测, 不修改 IRIS 状态。
+# IRIS 保持 ColorOS 同款 SLEEP-ABYPASS 模式即可, 无需额外操作。
+#
+# 注意: OplusRefreshRate 是 platform 签名的 system_ext/priv-app,
+# 运行在 platform_app 域 (实测: u:r:platform_app:s0)。
+# 本文件规则针对 platform_app 域。
+# 用独立文件名 platform_app_refreshrate.te, 避免同名冲突。
+
+# 1. 绑定高通 display config HAL (IDisplayConfig AIDL, 隐藏 secondary)
+#    方法: ServiceManager.getService() (find) + binder transact
+#    platform_app 需要 find 权限 (默认没有)
+#    类型名: vendor_hal_vnddisplayconfig_service (实测 AVC 日志确认, 带 vnd)
+allow platform_app vendor_hal_vnddisplayconfig_service:service_manager find;
+#    注意: 不要对 service_manager_type 用 binder_call (含 transfer,
+#    违反 domain.te neverallow — 编译错误已证实)。
+#    参考: system/sepolicy/private/surfaceflinger.te:33
+#      allow surfaceflinger vendor_hal_displayconfig_service:service_manager find;
+
+# 2. 读取 IRIS sysfs (环境检测, 只读)
+#    标签: /sys/kernel/iris/ → vendor_sysfs_iris (hardware/oplus/sepolicy genfs)
+r_dir_file(platform_app, vendor_sysfs_iris)
+
+# 3. 写 oplus_display sysfs (可选后端, 刷新率应用)
+#    标签: /sys/kernel/oplus_display/ → vendor_sysfs_graphics
+#    (genfs_contexts:34: genfscon sysfs /kernel/oplus_display → vendor_sysfs_graphics)
+#    platform_app 默认没有 rw 权限 (system_app 才有), 需要显式授权
+rw_dir_file(platform_app, vendor_sysfs_graphics)

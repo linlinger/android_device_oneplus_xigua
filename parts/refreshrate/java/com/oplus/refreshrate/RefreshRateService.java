@@ -21,6 +21,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
 
+import com.oplus.refreshrate.core.AppConfig;
 import com.oplus.refreshrate.core.EnvironmentChecker;
 import com.oplus.refreshrate.core.RefreshRateApplier;
 import com.oplus.refreshrate.core.RefreshRateConfigParser;
@@ -50,6 +51,7 @@ public class RefreshRateService extends Service {
     private SceneMonitor mSceneMonitor;
     private RefreshRateConfigParser mRefreshRateConfig;
     private VrrConfigParser mVrrConfig;
+    private AppConfig mAppConfig;
 
     /** 找第一个存在的配置文件 */
     private File findConfig(String... paths) {
@@ -75,9 +77,6 @@ public class RefreshRateService extends Service {
         // 默认后端: SF (无 root 也可用)
         RefreshRateApplier.init(this, RefreshRateApplier.BACKEND_SF);
 
-        // 场景监听 (智能模式)
-        mSceneMonitor = new SceneMonitor(this, mCore);
-
         // 环境检查 (支持其他手机)
         EnvironmentChecker.Capabilities caps = EnvironmentChecker.check();
         if (!caps.supported) {
@@ -101,6 +100,16 @@ public class RefreshRateService extends Service {
         Log.i(TAG, "refresh configs: " + mRefreshRateConfig.size()
                 + " apps, vrr v" + mVrrConfig.getVersion()
                 + ", timeout=" + mVrrConfig.getTimeout());
+
+        // 场景监听 (智能模式) — 用 AppConfig 解析应用级刷新率 (含类原生配置)
+        mAppConfig = new AppConfig();
+        mAppConfig.load(findConfig(
+                "/product/etc/aosp_app_config.xml",
+                "/product/etc/refresh_rate_config.xml",
+                "/system/etc/aosp_app_config.xml",
+                "/system/etc/refresh_rate_config.xml"));
+        mSceneMonitor = new SceneMonitor(this, mCore, mAppConfig);
+        mSceneMonitor.start();
 
         // 隐藏 secondary display (与 ColorOS 一致, 单 display 语义)
         // 仅在支持的环境中执行, 延迟等待 HWC/display 服务就绪

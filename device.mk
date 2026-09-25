@@ -19,14 +19,13 @@ TARGET_SCREEN_WIDTH := 1240
 
 # Display
 PRODUCT_PACKAGES += \
-    OplusLtpo \
-    OplusIrisBypass \
     OplusRefreshRate
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/display/displayconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/displayconfig/display_id_4630947194812807555.xml \
     $(LOCAL_PATH)/configs/display/vrr/refresh_rate_config.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/refresh_rate_config.xml \
-    $(LOCAL_PATH)/configs/display/vrr/oplus_vrr_config.json:$(TARGET_COPY_OUT_PRODUCT)/etc/oplus_vrr_config.json
+    $(LOCAL_PATH)/configs/display/vrr/oplus_vrr_config.json:$(TARGET_COPY_OUT_PRODUCT)/etc/oplus_vrr_config.json \
+    $(LOCAL_PATH)/configs/display/vrr/aosp_app_config.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/aosp_app_config.xml
 
 $(call soong_config_set,qtidisplay,pxlw_vendor_namespace,vendor/oneplus/xigua)
 $(call soong_config_set_bool,qtidisplay,pxlw_hw_iris7,true)

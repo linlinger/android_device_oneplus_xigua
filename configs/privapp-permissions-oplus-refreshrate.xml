@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     OplusRefreshRate 特权权限白名单 (privapp-permissions)
+     PACKAGE_USAGE_STATS 是 signature|privileged 权限, 必须在此 allowlist
+     否则 system_server 启动时抛 IllegalStateException → 卡 bootanimation
+-->
+<permissions>
+    <privapp-permissions package="com.oplus.refreshrate">
+        <permission name="android.permission.PACKAGE_USAGE_STATS"/>
+        <permission name="android.permission.WRITE_SETTINGS"/>
+        <permission name="android.permission.MANAGE_ACTIVITY_TASKS"/>
+    </privapp-permissions>
+</permissions>

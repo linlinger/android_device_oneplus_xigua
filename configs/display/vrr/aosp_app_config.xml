@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<!--
+     AviumUI 类原生应用刷新率配置 (AOSP/LineageOS/Google 应用 + 测试应用)
+
+     原厂配置 (refresh_rate_config.xml) 覆盖 OPPO/ColorOS 应用 + 部分常用应用。
+     本文件补充类原生应用, 行为参考 OPPO 原厂:
+       - 相机/拍摄: 高刷新率 (取景流畅)
+       - 桌面/滑动: 高刷新率 (跟手)
+       - 音乐/视频播放: 90Hz (省电 + 流畅)
+       - 工具/设置: 60Hz (省电)
+       - 游戏: 120Hz
+
+     包名来自设备实测 (pm list packages)。
+-->
+<refresh_rate_config version="20260925" ratemagic="8550T60_90_120">
+
+    <!-- ========== 相机 (取景要流畅, 120Hz) ========== -->
+    <item package="com.google.android.apps.googlecamera.fishfood" rateId="3-2-2-3" />
+    <item package="com.google.android.GoogleCamera" rateId="3-2-2-3" />
+    <item package="com.android.camera" rateId="3-2-2-3" />
+    <item package="org.lineageos.snap" rateId="3-2-2-3" />
+
+    <!-- ========== 桌面 (滑动跟手, 120Hz) ========== -->
+    <item package="com.android.launcher3" rateId="3-2-2-3" />
+    <item package="com.android.quicksteplauncher" rateId="3-2-2-3" />
+    <item package="org.lineageos.trebuchet" rateId="3-2-2-3" />
+    <item package="com.google.android.apps.nexuslauncher" rateId="3-2-2-3" />
+
+    <!-- ========== Google 套件 (设备实测安装) ========== -->
+    <!-- 拨号/时钟/计算器/日历/联系人: 静态工具, 60Hz 省电 -->
+    <item package="com.google.android.dialer" rateId="2-2-2-2" />
+    <item package="com.google.android.deskclock" rateId="2-2-2-2" />
+    <item package="com.google.android.calculator" rateId="2-2-2-2" />
+    <item package="com.google.android.calendar" rateId="2-2-2-2" />
+    <item package="com.google.android.contacts" rateId="2-2-2-2" />
+    <!-- 文件/图库/照片: 浏览可 90Hz (跟手 + 省电) -->
+    <item package="com.google.android.apps.nbu.files" rateId="2-1-2-1" />
+    <item package="com.google.android.documentsui" rateId="2-1-2-1" />
+    <item package="com.google.android.apps.photos" rateId="2-1-2-1" />
+
+    <!-- ========== AOSP 兜底 (未装 Google 套件时) ========== -->
+    <item package="com.android.dialer" rateId="2-2-2-2" />
+    <item package="com.android.deskclock" rateId="2-2-2-2" />
+    <item package="com.android.calculator2" rateId="2-2-2-2" />
+    <item package="com.android.calendar" rateId="2-2-2-2" />
+    <item package="com.android.contacts" rateId="2-2-2-2" />
+    <item package="com.android.messaging" rateId="2-2-2-2" />
+    <item package="com.android.gallery3d" rateId="2-1-2-1" />
+    <item package="com.android.documentsui" rateId="2-1-2-1" />
+    <item package="com.android.externalstorage" rateId="2-1-2-1" />
+
+    <!-- ========== LineageOS 组件 ========== -->
+    <item package="org.lineageos.recorder" rateId="2-2-2-2" />
+    <item package="org.lineageos.eleven" rateId="2-1-2-1" />
+    <item package="org.lineageos.jelly" rateId="2-1-2-1" />
+
+    <!-- ========== 测试应用 (用户设备实测) ========== -->
+    <!-- 酷安: 信息流/图片浏览, 90Hz 流畅 + 省电 -->
+    <item package="com.coolapk.market" rateId="2-1-2-1" />
+
+    <!-- ========== 设置/系统界面 (60Hz, 跟随动画) ========== -->
+    <item package="com.android.settings" rateId="2-2-2-2" />
+    <item package="com.android.systemui" rateId="2-2-2-2" />
+
+</refresh_rate_config>

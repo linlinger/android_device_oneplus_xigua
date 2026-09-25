@@ -12,6 +12,9 @@
 
 package com.oplus.refreshrate;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -70,8 +73,10 @@ public class RefreshRateService extends Service {
         Log.i(TAG, "onCreate");
         mCore = new RefreshRateCore();
 
+        // 前台保活: startForeground (最小通知, 防 LMK/冻结)
+        startForegroundCompat();
+
         // 静默后台服务: 提高线程优先级 (模拟原厂 OPlusVRRThread 优先级 -14)
-        // 不显示通知, 不前台化, 保持后台运行 (debug 验证版)
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
         // 默认后端: SF (无 root 也可用)
@@ -126,6 +131,37 @@ public class RefreshRateService extends Service {
         // 恢复上次模式
         mMode = getSharedPreferences("rr", MODE_PRIVATE).getInt("mode", 0);
         applyMode();
+    }
+
+    /** 前台保活: 创建通知渠道 + startForeground (最小通知) */
+    private void startForegroundCompat() {
+        try {
+            String channelId = "refresh_rate_scheduler";
+            NotificationManager nm = (NotificationManager)
+                    getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                NotificationChannel channel = new NotificationChannel(
+                        channelId, "刷新率调度",
+                        NotificationManager.IMPORTANCE_MIN);
+                channel.setShowBadge(false);
+                channel.enableVibration(false);
+                channel.setSound(null, null);
+                nm.createNotificationChannel(channel);
+            }
+            Notification notification = new Notification.Builder(this, channelId)
+                    .setContentTitle("刷新率调度")
+                    .setContentText("正在智能调度屏幕刷新率")
+                    .setSmallIcon(android.R.drawable.ic_menu_view)
+                    .setOngoing(true)
+                    .setPriority(Notification.PRIORITY_MIN)
+                    .build();
+            startForeground(1, notification,
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+            Log.i(TAG, "startForeground OK (保活)");
+        } catch (Exception e) {
+            // 某些 ROM/权限下失败, 退化为普通服务 (仍会 START_STICKY)
+            Log.w(TAG, "startForeground failed: " + e.getMessage());
+        }
     }
 
     @Override

@@ -28,12 +28,12 @@ public class BootReceiver extends BroadcastReceiver {
         }
     }
 
-    /** 启动刷新率调度服务 (静默后台, 无前台通知) */
+    /** 启动刷新率调度服务 (前台服务保活) */
     public static void startService(Context context) {
         try {
             Intent svc = new Intent(context, RefreshRateService.class);
-            context.startService(svc);
-            Log.i(TAG, "service started");
+            context.startForegroundService(svc);
+            Log.i(TAG, "service started (foreground)");
         } catch (Exception e) {
             Log.e(TAG, "service start failed: " + e.getMessage());
         }

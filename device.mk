@@ -33,6 +33,13 @@ $(call soong_config_set_bool,qtidisplay,pxlw_hw_iris7,true)
 PRODUCT_SYSTEM_PROPERTIES += \
     sys.brightness.disable_gamma_conversion=true
 
+# 调试便利: 自动允许 adb (免授权) + adb root (LineageOS root 完全访问)
+# 覆盖 lineage common.mk 的 ro.adb.secure=1
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.adb.secure=0 \
+    persist.sys.root_access=3 \
+    service.adb.root=1
+
 # Fingerprint
 TARGET_HAS_UDFPS := true
 
@@ -41,6 +48,10 @@ $(call inherit-product, vendor/oneplus/ir/config.mk)
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.consumerir.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.consumerir.xml
+
+# OplusRefreshRate 特权权限白名单 (必须打进 ROM, 否则 system_server 卡二屏)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/privapp-permissions-oplus-refreshrate.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-oplus-refreshrate.xml
 
 PRODUCT_PACKAGES += \
     android.hardware.ir-service.oplus

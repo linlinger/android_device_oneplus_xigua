@@ -147,6 +147,43 @@ public class RefreshRateApplier {
         }
     }
 
+    /** 恢复系统自动切换 (智能模式) */
+    public static void resetToAuto() {
+        if (sContext == null) {
+            return;
+        }
+        try {
+            // 1. 恢复自动切换
+            android.hardware.display.DisplayManager dm =
+                    (android.hardware.display.DisplayManager)
+                    sContext.getSystemService(Context.DISPLAY_SERVICE);
+            if (dm != null) {
+                dm.setRefreshRateSwitchingType(
+                        android.hardware.display.DisplayManager
+                                .SWITCHING_TYPE_ACROSS_AND_WITHIN_GROUPS);
+                Log.i(TAG, "switching type restored to ACROSS_AND_WITHIN_GROUPS");
+            }
+
+            // 2. 清除用户偏好模式
+            try {
+                Class<?> dmGlobalCls = Class.forName(
+                        "android.hardware.display.DisplayManagerGlobal");
+                Object dmGlobal = dmGlobalCls.getMethod("getInstance")
+                        .invoke(null);
+                dmGlobalCls.getMethod("resetUserPreferredDisplayMode",
+                                int.class)
+                        .invoke(dmGlobal,
+                                android.view.Display.DEFAULT_DISPLAY);
+                Log.i(TAG, "userPreferredDisplayMode reset");
+            } catch (Exception e) {
+                Log.e(TAG, "resetUserPreferredDisplayMode failed: "
+                        + e.getMessage());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "resetToAuto failed", e);
+        }
+    }
+
     /** 后端 2: sysfs 直写 (内核态, 需 root) */
     private static void applySysfs(float rate) {
         // xigua: /sys/class/drm/card0-DSI-1/modes 显示 120/90/60

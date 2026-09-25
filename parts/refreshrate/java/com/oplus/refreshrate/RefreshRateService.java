@@ -174,6 +174,8 @@ public class RefreshRateService extends Service {
             case 0:
             default:  // 智能
                 mCore.clearAllVotes();
+                // 恢复系统自动切换 (之前锁定设置了 NONE, 必须还原)
+                RefreshRateApplier.resetToAuto();
                 break;
         }
         // 立即应用

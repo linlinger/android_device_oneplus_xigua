@@ -33,13 +33,6 @@ $(call soong_config_set_bool,qtidisplay,pxlw_hw_iris7,true)
 PRODUCT_SYSTEM_PROPERTIES += \
     sys.brightness.disable_gamma_conversion=true
 
-# 调试便利: 自动允许 adb (免授权) + adb root (LineageOS root 完全访问)
-# 覆盖 lineage common.mk 的 ro.adb.secure=1
-PRODUCT_SYSTEM_PROPERTIES += \
-    ro.adb.secure=0 \
-    persist.sys.root_access=3 \
-    service.adb.root=1
-
 # Fingerprint
 TARGET_HAS_UDFPS := true
 
@@ -50,8 +43,10 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.consumerir.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.consumerir.xml
 
 # OplusRefreshRate 特权权限白名单 (必须打进 ROM, 否则 system_server 卡二屏)
+# 注意: app 在 /system_ext/priv-app, allowlist 必须放 system_ext 分区
+# (privapp 校验按分区匹配: system_ext 的 app 找 system_ext/etc/permissions/)
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/privapp-permissions-oplus-refreshrate.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-oplus-refreshrate.xml
+    $(LOCAL_PATH)/configs/privapp-permissions-oplus-refreshrate.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-oplus-refreshrate.xml
 
 PRODUCT_PACKAGES += \
     android.hardware.ir-service.oplus
@@ -99,8 +94,24 @@ PRODUCT_PACKAGES += \
 
 $(call soong_config_set_bool,OPLUS_LINEAGE_VIBRATOR_HAL,USE_EFFECT_STREAM,true)
 
+# 调试便利: adb 完全免授权 (任何电脑连上都自动允许)
+# 通过 LineageOS 官方开关 WITH_ADB_INSECURE → common.mk 设 ro.adb.secure=0
+# (不能直接设 ro.adb.secure=0, 会和 lineage 的 =1 冲突报 duplicate sysprop)
+WITH_ADB_INSECURE := true
+
 # Inherit from the common OEM chipset makefile.
 $(call inherit-product, device/oneplus/sm8550-common/common.mk)
 
 # Inherit from the proprietary files makefile.
 $(call inherit-product, vendor/oneplus/xigua/xigua-vendor.mk)
+
+# ---------------------------------------------------------------------------
+# 调试便利 (必须在所有 inherit 之后: 后赋值覆盖 lineage common.mk 的 =1)
+# adb root: persist.sys.root_access=3 (LineageOS root 完全访问) + service.adb.root=1
+# 注意: 不要设 ro.adb.secure=0! LineageOS 已在 system_ext 设了 =1,
+# 两个值同时存在 → gen_build_prop 报 duplicate sysprop → 编译失败。
+# 授权问题用"低版本先授权, 升级保留 data"解决 (RSA key 在 /data/misc/adb)。
+# ---------------------------------------------------------------------------
+PRODUCT_SYSTEM_EXT_PROPERTIES += \
+    persist.sys.root_access=3 \
+    service.adb.root=1

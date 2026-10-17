@@ -48,6 +48,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/privapp-permissions-oplus-refreshrate.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-oplus-refreshrate.xml
 
+# 相机 4K 视频支持: 用 odm 的完整 media_profiles (含 2160p) 覆盖 vendor 默认版
+# (系统加载 /vendor/etc/media_profiles_vendor.xml, 默认版无 4K → UI 缺 4K 选项)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/media/media_profiles_vendor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_vendor.xml
+
 PRODUCT_PACKAGES += \
     android.hardware.ir-service.oplus
 

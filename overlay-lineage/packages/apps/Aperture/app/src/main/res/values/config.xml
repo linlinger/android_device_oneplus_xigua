@@ -37,11 +37,16 @@
         <item>4</item> <item>sd|hd|fhd|uhd</item> <item>60</item>
     </string-array>
 
-    <!-- 隐藏相机: 2(广角物理) 3(微距物理) 4(逻辑主摄)
-         注: 逻辑相机 4 在 CamX HAL 下不出帧 (预览冻结, 2026-10-17 实测),
-         主摄用物理相机 0 (预览/4K60 已验证), 逻辑 4 一并隐藏 -->
+    <!-- 镜头档位: 主摄 0 的 1x/2x (数字变焦, 对齐 ColorOS 的 2x 按钮) -->
+    <string-array name="config_logicalZoomRatios">
+        <item>0</item> <item>1.0</item> <item>1.0</item>
+        <item>0</item> <item>2.0</item> <item>2.0</item>
+    </string-array>
+
+    <!-- 隐藏相机: 3(微距) 4(逻辑主摄)
+         注: 逻辑相机 4 在 CamX HAL 下不出帧且触发看门狗崩溃 (2026-10-17 实测)
+         相机 2 (物理广角 0.5x) 保留可用 -->
     <string-array name="config_ignoredAuxCameraIds">
-        <item>2</item>
         <item>3</item>
         <item>4</item>
     </string-array>

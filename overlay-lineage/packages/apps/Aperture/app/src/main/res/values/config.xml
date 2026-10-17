@@ -37,22 +37,12 @@
         <item>4</item> <item>sd|hd|fhd|uhd</item> <item>60</item>
     </string-array>
 
-    <!-- 对齐 ColorOS 相机镜头布局 (AviumUI C 方案)
-         cameraId 4 = 逻辑主摄 (物理广角2 + 物理主摄0 融合, OPPO 0.5-10x)
-         广角 0.6x → zoomRatio 0.5 (切物理广角2)
-         主摄 1.0x → zoomRatio 1.0 (物理主摄0)
-         2.0x → zoomRatio 2.0 (数字变焦) -->
-    <string-array name="config_logicalZoomRatios">
-        <item>4</item> <item>0.6</item> <item>0.5</item>
-        <item>4</item> <item>1.0</item> <item>1.0</item>
-        <item>4</item> <item>2.0</item> <item>2.0</item>
-    </string-array>
-
-    <!-- 隐藏物理相机 (0=主摄物理, 2=广角物理, 3=微距物理),
-         只用逻辑相机 4 (对齐 ColorOS OPPO 相机行为) -->
+    <!-- 隐藏相机: 2(广角物理) 3(微距物理) 4(逻辑主摄)
+         注: 逻辑相机 4 在 CamX HAL 下不出帧 (预览冻结, 2026-10-17 实测),
+         主摄用物理相机 0 (预览/4K60 已验证), 逻辑 4 一并隐藏 -->
     <string-array name="config_ignoredAuxCameraIds">
-        <item>0</item>
         <item>2</item>
         <item>3</item>
+        <item>4</item>
     </string-array>
 </resources>

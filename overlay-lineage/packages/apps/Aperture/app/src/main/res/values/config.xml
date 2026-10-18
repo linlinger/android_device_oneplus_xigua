@@ -30,24 +30,26 @@
                  <item>1</item> <item>sd|hd|fhd</item> <item>60</item>
              </string-array>
     -->
+    <!-- 相机 0 (imx890 主摄): 4K60 由框架层补齐 (ColorOS media_profiles 无 60fps 定义)
+         相机 1 (前置): 1080p30
+         相机 2 (物理广角 8MP, 3264x2448): 无 UHD 能力, AE 最高 30fps (2026-10-18 dumpsys 实测)
+         相机 4 (逻辑主摄) 严禁出现: CamX HAL 下不出帧 + 看门狗 SIGABRT (2026-10-17 实测) -->
     <string-array name="config_additionalVideoConfigurations">
         <item>0</item> <item>sd|hd|fhd|uhd</item> <item>60</item>
         <item>1</item> <item>sd|hd|fhd</item>     <item>30</item>
-        <item>3</item> <item>sd|hd|fhd</item>     <item>60</item>
-        <item>4</item> <item>sd|hd|fhd|uhd</item> <item>60</item>
-    </string-array>
-
-    <!-- 镜头档位: 主摄 0 的 1x/2x (数字变焦, 对齐 ColorOS 的 2x 按钮) -->
-    <string-array name="config_logicalZoomRatios">
-        <item>0</item> <item>1.0</item> <item>1.0</item>
-        <item>0</item> <item>2.0</item> <item>2.0</item>
+        <item>2</item> <item>sd|hd|fhd</item>     <item>30</item>
     </string-array>
 
     <!-- 隐藏相机: 3(微距) 4(逻辑主摄)
-         注: 逻辑相机 4 在 CamX HAL 下不出帧且触发看门狗崩溃 (2026-10-17 实测)
+         注: 逻辑相机 4 在 CamX HAL 下不出帧且触发看门狗崩溃, 一旦触发必须重启 (2026-10-17 实测)
          相机 2 (物理广角 0.5x) 保留可用 -->
     <string-array name="config_ignoredAuxCameraIds">
         <item>3</item>
         <item>4</item>
     </string-array>
+
+    <!-- 注意: 不要给相机 0 配 config_logicalZoomRatios!
+         Aperture LensSelectorLayout 的渲染是二选一的:
+           - 配了 zoom 档位 → 只渲染 zoom 按钮, 广角相机无法切换 (flipCamera 仅前/后翻转)
+           - 不配 → 渲染相机切换按钮 (0.5x/1x), 2x 靠捏合缩放, 当前倍率实时显示在按钮上 -->
 </resources>

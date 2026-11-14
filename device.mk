@@ -58,6 +58,17 @@ PRODUCT_PACKAGES += \
     OPlusSystemUIResTarget \
     OPlusWifiResTarget
 
+# OplusRefreshRate (vendor 版刷新率调度, linlinger/PJA110-RefreshRateVendor)
+# 装 /vendor/priv-app/OplusRefreshRateVendor; 平台签名 privapp,
+# A17 seapp_contexts 首条匹配 (seinfo=platform + targetSdk<37) → platform_app_36 域,
+# 对应 sepolicy/vendor/platform_app_refreshrate.te
+PRODUCT_PACKAGES += \
+    OplusRefreshRateVendor
+
+# vendor priv-app 签名权限白名单 (必须与 app 同分区: vendor)
+PRODUCT_COPY_FILES += \
+    vendor/oneplus/refreshrate/sepolicy/vendor/privapp-permissions-com.oplus.refreshrate.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/privapp-permissions-com.oplus.refreshrate.xml
+
 # Power
 $(call soong_config_set,qtipower,mode_ext_lib,power-ext-oplus)
 

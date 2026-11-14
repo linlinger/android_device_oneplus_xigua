@@ -21,6 +21,10 @@ TARGET_SCREEN_DENSITY := 420
 # Kernel
 TARGET_KERNEL_ADDITIONAL_FLAGS += CONFIG_XIGUA_DTB=y
 
+# Sepolicy (OplusRefreshRate vendor app 规则 + /sys/kernel/iris genfs 标签)
+# A17 的 hardware/oplus 与 sepolicy_vndr 均未提供 vendor_sysfs_iris 标签, 由本目录补充
+BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
+
 # Properties
 TARGET_ODM_PROP += $(DEVICE_PATH)/properties/odm.prop
 TARGET_PRODUCT_PROP += $(DEVICE_PATH)/properties/product.prop

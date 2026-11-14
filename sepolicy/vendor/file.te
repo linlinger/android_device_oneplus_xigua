@@ -1,0 +1,7 @@
+# OplusRefreshRate (com.oplus.refreshrate) — IRIS sysfs 标签
+#
+# A17 的 crdroid/Lineage 树中 hardware/oplus 与 sepolicy_vndr 均未定义
+# vendor_sysfs_iris (A16 时由 crdroid 16.0 的 hardware/oplus 提供)。
+# 本类型供 /sys/kernel/iris (IRIS7 独显芯片环境检测, 只读) 使用。
+
+type vendor_sysfs_iris, sysfs_type, fs_type;

@@ -1,0 +1,34 @@
+# OplusRefreshRate 刷新率调度服务 — platform_app_36 域规则
+#
+# OplusRefreshRateVendor (linlinger/PJA110-RefreshRateVendor, vendor: true,
+# privileged: true, platform 签名, targetSdk 35) 的权限需求:
+#   1. 刷新率调度 (投票决策 → 应用刷新率)
+#   2. 绑定高通 display config HAL (IDisplayConfig AIDL) —
+#      SecondaryDisplayHider 调 setDisplayStatus(BUILTIN2, OFFLINE);
+#      A17 下 secondary 已由 HAL 层 (linlinger/android_hardware_qcom_display
+#      17.0, commit f484f69) 隐藏, 此调用为防御性 no-op, 仍保留 find 权限
+#   3. 环境检测: 读 /sys/kernel/iris (只读, 不修改 IRIS 状态)
+#   4. 可选后端 (BACKEND_SYSFS/BACKEND_OPLUS): 写
+#      /sys/kernel/oplus_display/{dsi_cmd,adfr_config}
+#
+# SELinux 域说明:
+#   A17 system/sepolicy/private/seapp_contexts 首条匹配:
+#   seinfo=platform + targetSdk 35 (<37) → platform_app_36 域。
+#   (A16 时为 platform_app; 该类型在 system/sepolicy/public, vendor 可引用)
+#
+# 文件名加 _refreshrate 后缀, 避免与 hardware/oplus 等同名文件冲突。
+
+# 1. 绑定高通 display config HAL
+#    A17 类型已更名: vendor_hal_displayconfig_service → vendor_hal_vnddisplayconfig_service
+#    (device/qcom/sepolicy_vndr/sm8550/generic/vendor/common/service_contexts:42)
+allow platform_app_36 vendor_hal_vnddisplayconfig_service:service_manager find;
+
+# 2. 读 IRIS sysfs (环境检测, 只读)
+allow platform_app_36 vendor_sysfs_iris:dir r_dir_perms;
+allow platform_app_36 vendor_sysfs_iris:file r_file_perms;
+
+# 3. 写 oplus_display sysfs (可选后端, 刷新率应用)
+#    标签: genfscon sysfs /kernel/oplus_display → vendor_sysfs_graphics
+#    (hardware/oplus/sepolicy/qti/vendor/genfs_contexts:36)
+allow platform_app_36 vendor_sysfs_graphics:dir rw_dir_perms;
+allow platform_app_36 vendor_sysfs_graphics:file rw_file_perms;

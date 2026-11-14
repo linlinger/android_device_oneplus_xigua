@@ -87,6 +87,24 @@ PRODUCT_PACKAGES += \
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
 
+# A17 (Lineage 24.0 构建) 中 PRODUCT_SOONG_NAMESPACES 被列为 readonly-late
+# product 变量, BoardConfigQcom.mk 在 BoardConfig 阶段的追加全部失效
+# (wlan/sm8550/bootctrl/thermal/data-ipa/commonsys 都不再导出), 导致:
+#  - frameworks libwifi_hal_vendor_impl_defaults (qcwcn) 找不到 libwifi-hal-qcom
+#  - sm8550 display 相关跨 namespace 引用断链
+# 这里在 product 侧复刻 A16 (AviumUI) 时代 BoardConfigQcom 生效的 namespace 集合
+PRODUCT_SOONG_NAMESPACES += \
+    hardware/qcom-caf/sm8550 \
+    hardware/qcom-caf/bootctrl \
+    hardware/qcom-caf/sm8550/data-ipa-cfg-mgr \
+    hardware/qcom-caf/thermal \
+    hardware/qcom-caf/wlan \
+    hardware/qcom-caf/wlan/qcwcn \
+    vendor/qcom/opensource/commonsys/display \
+    vendor/qcom/opensource/commonsys-intf/display \
+    vendor/qcom/opensource/dataservices \
+    vendor/qcom/opensource/audio-hal/st-hal-ar-legacy
+
 # Touch
 $(call soong_config_set_bool,OPLUS_LINEAGE_TOUCH_HAL,USE_OPLUSTOUCH,true)
 $(call soong_config_set,OPLUS_LINEAGE_TOUCH_HAL,INCLUDE_DIR,$(LOCAL_PATH)/touch/include)

@@ -17,6 +17,14 @@ PRODUCT_SYSTEM_EXT_PROPERTIES += \
     persist.sys.root_access=3 \
     service.adb.root=1
 
+# 调试便利: 构建期注入 adb 公钥 (AOSP 官方机制, source.android.com
+# "Set ADB_VENDOR_KEYS to connect over USB" 一节)。
+# adb_keys 模块 (build/soong/etc/adb_keys.go) 要求 ro.debuggable=1 且
+# 产物装到 /product/etc/security/adb_keys; adbd 启动时自动信任该公钥,
+# 无论 ro.adb.secure 取值如何都不会弹授权框。
+# 仅对本机构建生效: 公钥是公开数据, 可安全入库。
+PRODUCT_ADB_KEYS := $(LOCAL_PATH)/adb_keys.pub
+
 # Audio
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \

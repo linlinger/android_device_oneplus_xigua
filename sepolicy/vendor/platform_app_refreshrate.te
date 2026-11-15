@@ -18,15 +18,20 @@
 #
 # 文件名加 _refreshrate 后缀, 避免与 hardware/oplus 等同名文件冲突。
 
-# 1. 绑定高通 display config HAL
-#    A17 类型已更名: vendor_hal_displayconfig_service → vendor_hal_vnddisplayconfig_service
-#    (device/qcom/sepolicy_vndr/sm8550/generic/vendor/common/service_contexts:42)
-#    注意: 该 service 的 find 被 hal_attribute_service 宏的 build_test_only
-#    neverallow 保护 (domain -client -server -atrace -shell -system_app
-#    -traceur_app), 直接写 allow 会撞 neverallow; 正确姿势是把本域加进
-#    hal_graphics_composer_client 属性 (te_macros 官方注释推荐的做法),
-#    find + binder_call 权限由 hal_attribute_service 的 client 规则自动授予
-hal_client_domain(platform_app_36, hal_graphics_composer);
+# 1. 绑定高通 display config HAL — 不做 SELinux 授权, 说明:
+#    A17 该 service 的 find 被 hal_attribute_service 宏 (system/sepolicy/
+#    public/te_macros:761) 的 build_test_only neverallow 保护, 豁免集仅
+#    client/server/atrace/shell/system_app/traceur_app;
+#    官方推荐解法 hal_client_domain() 在此不可用 — client 属性是父属性
+#    hal_graphics_composer 的成员, 会让 app 域继承 HAL 服务端特权
+#    (self:capability sys_nice 等), 撞 app.te:600 的 neverallow
+#    (recovery 策略编译已实证)。
+#    事实上 SecondaryDisplayHider.setDisplayStatus(BUILTIN2, OFFLINE) 在
+#    A17 只是防御性 no-op: secondary 已由 HAL 层 (linlinger/
+#    android_hardware_qcom_display 17.0, commit f484f69) 隐藏。
+#    代码侧 binder==null → return false 全程 try/catch, SELinux 拒绝时
+#    ServiceManager.getService 返回 null, 调用优雅跳过 (仅 dmesg 留
+#    avc denial 记录, 无功能影响)。
 
 # 2. 读 IRIS sysfs (环境检测, 只读)
 allow platform_app_36 vendor_sysfs_iris:dir r_dir_perms;

@@ -21,7 +21,12 @@
 # 1. 绑定高通 display config HAL
 #    A17 类型已更名: vendor_hal_displayconfig_service → vendor_hal_vnddisplayconfig_service
 #    (device/qcom/sepolicy_vndr/sm8550/generic/vendor/common/service_contexts:42)
-allow platform_app_36 vendor_hal_vnddisplayconfig_service:service_manager find;
+#    注意: 该 service 的 find 被 hal_attribute_service 宏的 build_test_only
+#    neverallow 保护 (domain -client -server -atrace -shell -system_app
+#    -traceur_app), 直接写 allow 会撞 neverallow; 正确姿势是把本域加进
+#    hal_graphics_composer_client 属性 (te_macros 官方注释推荐的做法),
+#    find + binder_call 权限由 hal_attribute_service 的 client 规则自动授予
+hal_client_domain(platform_app_36, hal_graphics_composer);
 
 # 2. 读 IRIS sysfs (环境检测, 只读)
 allow platform_app_36 vendor_sysfs_iris:dir r_dir_perms;
@@ -30,5 +35,8 @@ allow platform_app_36 vendor_sysfs_iris:file r_file_perms;
 # 3. 写 oplus_display sysfs (可选后端, 刷新率应用)
 #    标签: genfscon sysfs /kernel/oplus_display → vendor_sysfs_graphics
 #    (hardware/oplus/sepolicy/qti/vendor/genfs_contexts:36)
-allow platform_app_36 vendor_sysfs_graphics:dir rw_dir_perms;
+#    dir 权限只能给读: platform domain.te neverallow domain sysfs_type:dir
+#    (write create link rename add_name remove_name reparent rmdir);
+#    写文件内容只需要 dir search/getattr + file 级 rw
+allow platform_app_36 vendor_sysfs_graphics:dir r_dir_perms;
 allow platform_app_36 vendor_sysfs_graphics:file rw_file_perms;

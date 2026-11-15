@@ -8,6 +8,15 @@
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
+# 调试便利: adb 免授权 (vendor/lineage/config/common.mk 消费此开关,
+# device.mk 先于 vendor/lineage/config/common_full_phone.mk 被解析, 时序满足)
+# 注: 不能直接设 ro.adb.secure=0, 会与 common.mk 的值冲突 (duplicate sysprop)
+WITH_ADB_INSECURE := true
+
+PRODUCT_SYSTEM_EXT_PROPERTIES += \
+    persist.sys.root_access=3 \
+    service.adb.root=1
+
 # Audio
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
@@ -65,9 +74,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     OplusRefreshRateVendor
 
-# vendor priv-app 签名权限白名单 (必须与 app 同分区: vendor)
-PRODUCT_COPY_FILES += \
-    vendor/oneplus/refreshrate/sepolicy/vendor/privapp-permissions-com.oplus.refreshrate.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/privapp-permissions-com.oplus.refreshrate.xml
+# 注: 不提供 privapp-permissions 白名单 —— manifest 里的权限要么是纯 signature
+# (平台签名自动授予, 白名单反而触发 ro.control_privapp_permissions=enforce 的
+# unknown-permission 违规 → SystemServer crash loop / bootloop), 要么是
+# appop/normal 级 (不需要白名单)
 
 # Power
 $(call soong_config_set,qtipower,mode_ext_lib,power-ext-oplus)

@@ -87,6 +87,16 @@ PRODUCT_PACKAGES += \
 # unknown-permission 违规 → SystemServer crash loop / bootloop), 要么是
 # appop/normal 级 (不需要白名单)
 
+# Lineage 组件的 privapp 白名单 (system_ext 分区, 必须与 priv-app 同分区):
+# Settings → lineageos.permission.MANAGE_LIVEDISPLAY
+# SystemUI → lineageos.permission.HARDWARE_ABSTRACTION_ACCESS
+# 这棵树 ro.control_privapp_permissions=enforce 无条件开启
+# (vendor/lineage/config/common.mk), 且 frameworks/base 的
+# privapp-permissions-platform.xml (/system) 没有条目 → 缺失即 bootloop
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/permissions/privapp-permissions-com.android.settings.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-com.android.settings.xml \
+    $(LOCAL_PATH)/permissions/privapp-permissions-com.android.systemui.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-com.android.systemui.xml
+
 # Power
 $(call soong_config_set,qtipower,mode_ext_lib,power-ext-oplus)
 

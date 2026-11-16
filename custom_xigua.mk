@@ -11,6 +11,12 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Inherit from xigua device
 $(call inherit-product, device/oneplus/xigua/device.mk)
 
+# GMS (PixelOS 自家 GMS 树, vendor/pixel/gms)
+# 注意: vendor/lineage 的 partner_gms.mk 走的是 vendor/partner_gms/, 本树不存在,
+# 必须直接显式继承 vendor/pixel/gms/products/gms.mk
+WITH_GMS := true
+$(call inherit-product, vendor/pixel/gms/products/gms.mk)
+
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- SystemUI (frameworks/base/packages/SystemUI/CustomManifest.xml) 请求的
-     Lineage Hardware 服务权限. 与 Settings 同理必须装在 system_ext 分区. -->
-<permissions>
-    <privapp-permissions package="com.android.systemui">
-        <permission name="lineageos.permission.HARDWARE_ABSTRACTION_ACCESS"/>
-    </privapp-permissions>
-</permissions>

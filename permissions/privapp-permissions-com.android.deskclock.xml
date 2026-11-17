@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GMS PrebuiltDeskClockGoogle 请求的 privapp 权限白名单.
+     vendor/pixel/gms 自带的 privapp-permissions-google-*.xml 均未覆盖
+     com.android.deskclock, 而 ro.control_privapp_permissions=enforce
+     缺条目即 SystemServer crash loop. DeskClock 装在 /product/priv-app,
+     白名单必须与 priv-app 同分区 → 装到 product. -->
+<permissions>
+    <privapp-permissions package="com.android.deskclock">
+        <permission name="android.permission.QUERY_USERS"/>
+        <permission name="android.permission.START_FOREGROUND_SERVICES_FROM_BACKGROUND"/>
+        <permission name="android.permission.CONTROL_DISPLAY_COLOR_TRANSFORMS"/>
+    </privapp-permissions>
+</permissions>

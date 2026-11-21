@@ -1,6 +1,7 @@
-# OplusRefreshRate — IRIS sysfs genfs 标签
+# IRIS sysfs genfs 标签 — 本文件不再携带 genfscon
 #
-# /sys/kernel/iris/ → vendor_sysfs_iris (见 file.te)
-# 参考: crdroid 16.0 hardware/oplus/sepolicy/qti/vendor/genfs_contexts
-
-genfscon sysfs /kernel/iris u:object_r:vendor_sysfs_iris:s0
+# /sys/kernel/iris 的标签改由 hardware/oplus/sepolicy/qti/vendor/
+# genfs_contexts 提供 (上游 crdroid 17.0 已加):
+#   genfscon sysfs /kernel/iris u:object_r:vendor_sysfs_graphics:s0
+# 本树曾自建 vendor_sysfs_iris 标签, 与上述条目 genfscon 同路径冲突
+# (duplicate entry), 故撤掉自定义类型, 授权规则见 platform_app_refreshrate.te。

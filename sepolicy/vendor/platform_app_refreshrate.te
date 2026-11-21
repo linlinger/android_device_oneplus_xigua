@@ -33,13 +33,16 @@
 #    ServiceManager.getService 返回 null, 调用优雅跳过 (仅 dmesg 留
 #    avc denial 记录, 无功能影响)。
 
-# 2. 读 IRIS sysfs (环境检测, 只读)
-allow platform_app_36 vendor_sysfs_iris:dir r_dir_perms;
-allow platform_app_36 vendor_sysfs_iris:file r_file_perms;
+# 2. 读 IRIS sysfs (环境检测, 只读) — 已并入下方 vendor_sysfs_graphics 规则:
+#    上游 crdroid 17.0 hardware/oplus 将 /sys/kernel/iris 也标为
+#    vendor_sysfs_graphics (genfs_contexts:36), 原 vendor_sysfs_iris
+#    自定义类型与之 genfscon 冲突已撤; line 46-47 的 dir r + file rw
+#    天然覆盖 iris 只读场景。
 
-# 3. 写 oplus_display sysfs (可选后端, 刷新率应用)
+# 3. 写 oplus_display sysfs (可选后端, 刷新率应用) + 读 IRIS sysfs
 #    标签: genfscon sysfs /kernel/oplus_display → vendor_sysfs_graphics
-#    (hardware/oplus/sepolicy/qti/vendor/genfs_contexts:36)
+#          genfscon sysfs /kernel/iris        → vendor_sysfs_graphics
+#    (hardware/oplus/sepolicy/qti/vendor/genfs_contexts)
 #    dir 权限只能给读: platform domain.te neverallow domain sysfs_type:dir
 #    (write create link rename add_name remove_name reparent rmdir);
 #    写文件内容只需要 dir search/getattr + file 级 rw

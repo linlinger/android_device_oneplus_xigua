@@ -94,6 +94,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/permissions/privapp-permissions-com.android.deskclock.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-com.android.deskclock.xml
 
+# OnePlus Camera (ColorOS 提取, 方案 B 精简移植) — 与 Aperture 共存
+$(call inherit-product-if-exists, vendor/oneplus/opluscamera/opluscamera.mk)
+
 # Power
 $(call soong_config_set,qtipower,mode_ext_lib,power-ext-oplus)
 

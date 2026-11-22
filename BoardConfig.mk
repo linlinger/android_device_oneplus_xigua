@@ -21,8 +21,19 @@ TARGET_SCREEN_DENSITY := 420
 # Kernel
 TARGET_KERNEL_ADDITIONAL_FLAGS += CONFIG_XIGUA_DTB=y
 
-# Sepolicy (OplusRefreshRate vendor app 规则 + /sys/kernel/iris genfs 标签)
-# A17 的 hardware/oplus 与 sepolicy_vndr 均未提供 vendor_sysfs_iris 标签, 由本目录补充
+# Sepolicy (OplusRefreshRate vendor app 规则)
+# /sys/kernel/iris (IRIS7 独显) 的 genfs 标签采用"上游优先"策略:
+#   1. crdroid 17.0 hardware/oplus/sepolicy/qti/vendor/genfs_contexts 已把
+#      iris 标为 vendor_sysfs_graphics (类型定义在 sepolicy_vndr/sm8550) →
+#      直接依赖上游, 不本地重复标注 (genfscon 同路径重复 = duplicate entry)
+#   2. 上游未提供时 (其他树/上游回滚) 才追加 vendor-iris-fallback 目录,
+#      补上同款 genfscon 条目
+#   访问授权 (sepolicy/vendor/platform_app_refreshrate.te → vendor_sysfs_graphics)
+#   两种情况通用, 不需要条件化。
+IRIS_UPSTREAM_GENFS := $(strip $(shell grep -hs "genfscon sysfs /kernel/iris" hardware/oplus/sepolicy/qti/vendor/genfs_contexts 2>/dev/null))
+ifeq ($(IRIS_UPSTREAM_GENFS),)
+BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor-iris-fallback
+endif
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 
 # Properties

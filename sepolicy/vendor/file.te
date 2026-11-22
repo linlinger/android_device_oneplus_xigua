@@ -1,7 +1,10 @@
 # IRIS sysfs 标签说明 (原 vendor_sysfs_iris 类型已撤)
 #
-# crdroid 17.0 上游 hardware/oplus 重新提供了 /sys/kernel/iris 的 genfscon,
-# 标签为 vendor_sysfs_graphics (类型定义在 sepolicy_vndr/sm8550/generic/
-# vendor/common/file.te)。本树自定义的 vendor_sysfs_iris 与之 genfscon
-# 同路径冲突 (duplicate entry), 已删除; 访问授权改用 vendor_sysfs_graphics,
+# 标签归属走"上游优先"策略 (条件开关见 BoardConfig.mk):
+#   - crdroid 17.0 上游 hardware/oplus 提供 genfscon
+#     /sys/kernel/iris → vendor_sysfs_graphics (类型定义在
+#     sepolicy_vndr/sm8550/generic/vendor/common/file.te)
+#   - 上游缺失时由 sepolicy/vendor-iris-fallback/ 兜底, 标签相同
+# 本树曾自建 vendor_sysfs_iris 类型, 与上游 genfscon 同路径冲突
+# (duplicate entry), 已删除; 访问授权统一用 vendor_sysfs_graphics,
 # 见 platform_app_refreshrate.te。

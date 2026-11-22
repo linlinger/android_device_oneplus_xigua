@@ -1,0 +1,12 @@
+# IRIS genfs 标签 fallback — 仅当 hardware/oplus 上游未提供时编译
+#
+# 条件开关在 BoardConfig.mk: grep 上游 genfs_contexts 无
+# "genfscon sysfs /kernel/iris" 条目时, 本目录才追加进
+# BOARD_VENDOR_SEPOLICY_DIRS。
+#
+# 标签与上游 crdroid 17.0 hardware/oplus 完全一致:
+#   genfscon sysfs /kernel/iris → vendor_sysfs_graphics
+#   (类型定义: sepolicy_vndr/sm8550/generic/vendor/common/file.te)
+# 访问授权: sepolicy/vendor/platform_app_refreshrate.te。
+
+genfscon sysfs /kernel/iris u:object_r:vendor_sysfs_graphics:s0

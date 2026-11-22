@@ -1,7 +1,10 @@
-# IRIS sysfs genfs 标签 — 本文件不再携带 genfscon
+# IRIS sysfs genfs 标签 — 本目录不含 genfscon 条目
 #
-# /sys/kernel/iris 的标签改由 hardware/oplus/sepolicy/qti/vendor/
-# genfs_contexts 提供 (上游 crdroid 17.0 已加):
-#   genfscon sysfs /kernel/iris u:object_r:vendor_sysfs_graphics:s0
-# 本树曾自建 vendor_sysfs_iris 标签, 与上述条目 genfscon 同路径冲突
-# (duplicate entry), 故撤掉自定义类型, 授权规则见 platform_app_refreshrate.te。
+# /sys/kernel/iris 的标签采用"上游优先"策略 (开关在 BoardConfig.mk):
+#   1. 上游 hardware/oplus/sepolicy/qti/vendor/genfs_contexts 已标注
+#      genfscon sysfs /kernel/iris → vendor_sysfs_graphics → 依赖上游
+#   2. 上游缺失时, BoardConfig.mk 追加 sepolicy/vendor-iris-fallback/
+#      提供同款 genfscon
+# 历史遗留: 本树曾自建 vendor_sysfs_iris 类型, 与上游条目 genfscon 同
+# 路径冲突 (duplicate entry), 已撤; 授权规则用 vendor_sysfs_graphics,
+# 见 platform_app_refreshrate.te。
